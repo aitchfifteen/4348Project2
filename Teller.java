@@ -41,14 +41,14 @@ class Teller extends Thread {
         this.customerSyncCondition = sharedLock.newCondition();
     }
     
+    // Renamed the getter to getTellerId() to avoid conflict with Thread's getId()
+    public int getTellerId() {
+        return tellerId;
+    }
+    
     // Allow access to the customer synchronization condition.
     public Condition getCustomerSyncCondition() {
         return customerSyncCondition;
-    }
-    
-    // A getter for the teller's ID so that customers can use it in their messages.
-    public int getId() {
-        return tellerId;
     }
     
     // Called by a customer to assign themselves to this teller.
