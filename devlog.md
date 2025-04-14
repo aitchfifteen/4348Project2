@@ -137,3 +137,80 @@ The teller’s state transitions (waiting, requesting manager permission, proces
 **3:00 PM**:
 
 Finishing up and push to main. Taking a break
+**5:00PM**
+
+Began work on the Customer class responsible for modeling a bank customer as a thread.
+
+Brainstormed how to integrate concurrency mechanisms (a Semaphore to limit entry into the bank and a ReentrantLock / Condition to control teller availability).
+
+**5:20PM**
+
+Decided on a strategy to uniquely identify customers using a static counter (nextCustomerId) guarded by idLock to ensure thread-safe ID assignment.
+
+Implemented constructor logic to initialize the desiredOperation (randomly either deposit or withdrawal with an amount between $100 and $1000).
+
+**5:40PM**
+
+Drafted the run() method to reflect the customer's lifecycle:
+
+Arrival and waiting to enter the bank (enterBank()).
+
+Choosing an available teller (chooseTeller()).
+
+Greeting and waiting for the teller’s prompt.
+
+Providing the transaction info to the teller.
+
+Waiting for the transaction to complete.
+
+Releasing the semaphore and leaving the bank.
+
+**6:15PM**
+
+Implemented enterBank() to use entrySemaphore.acquire() and release() to cap simultaneous customers inside the bank.
+
+Wrote chooseTeller() to block on Condition (tellerAvailCond) when no tellers are free. Once a teller is available, the customer removes it from the shared pool and notifies that teller.
+
+**7:00PM**
+
+Tested concurrency logic by running multiple customer threads, ensuring they wait for teller availability when the teller pool is empty, and that each teller is correctly assigned.
+
+Noted successful test of releasing a semaphore slot when the customer thread completes (leaveBank()).
+
+**7:30PM**
+
+Short break.
+
+**8:00PM**
+
+Enhanced logging statements to clarify each step (arrival, waiting, chosen teller ID, operation type/amount, leaving bank) for easier debugging.
+
+Added handling for potential InterruptedException within critical sections to gracefully handle thread interruptions.
+
+**9:00PM**
+
+Further review of concurrency flow:
+
+Ensured the random operation is generated only once in the constructor.
+
+Added a pause (pauseForPrompt()) simulating a short wait before the teller requests operation details.
+
+Confirmed usage of chosenTeller.getCustomerSyncCondition().signal() to notify the teller.
+
+**10:00PM**
+
+Verified that Customer properly awaits the teller’s completion via getOperationComplete().waitUntilSet().
+
+Confirmed that no deadlocks occur, as threads exit promptly after finishing their transaction.
+
+**11:00PM**
+
+Final code cleanup and inline documentation.
+
+Confirmed that the class is self-contained and flexible enough to integrate with the rest of the system (the Teller class and any shared resources).
+
+**11:30PM**
+
+Completed testing and finalized the Customer class implementation.
+
+Concluded work for the day.
